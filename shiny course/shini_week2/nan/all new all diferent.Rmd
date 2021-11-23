@@ -1,0 +1,101 @@
+---
+title: "final dashboard"
+output: 
+  flexdashboard::flex_dashboard:
+    orientation: columns
+    vertical_layout: fill
+runtime: shiny # remember this
+---
+
+```{r setup, include=FALSE}
+library(flexdashboard)
+library(tidyverse)
+library(shiny)
+library(plotly)
+
+dat <- read.csv("datos.csv")
+dat$Party<-recode(dat$dem,`1`="Democrat",`0`="Republican")
+```
+
+---
+
+page 1
+======
+### Chart A
+
+
+```{r}
+dat %>% 
+  drop_na() %>% 
+  filter(year>1979) %>% 
+  group_by(year,Party) %>% 
+  summarise(passed=sum(all_pass)) %>% ggplot(mapping = aes(x=year, y=passed)) + geom_area(aes(fill=Party)) + scale_fill_manual(values = c("red", "blue"
+  )) + ylab("All bills pased") + ggtitle("Number of bills pased since 1990")
+```
+
+
+
+page 2
+======
+column
+----------------------------------------------------------------------------
+
+### Chart B
+
+```{r}
+dat2 <- dat%>%
+  drop_na()%>%
+  filter(congress==110)
+
+p1 <- ggplot(dat2, mapping = aes(x=votepct, y=all_pass, color=Party))+
+           geom_point()+ geom_smooth()+ scale_color_manual(values = c("blue", "red")) + xlab("Vote pct")+ ylab("All Pass") + ggtitle("Passage and Vote pct., 110 Congress")
+
+ggplotly(p1)
+
+
+
+
+```
+
+column
+----------------------------------------------------------------------------
+### Chart C
+```{r}
+p2 <- ggplot(dat2, mapping = aes(x=dwnom1, y=all_pass, color=Party))+
+           geom_point()+ geom_smooth()+ scale_color_manual(values = c("blue", "red")) + xlab("Dw Nominate")+ ylab("All Pass") + ggtitle("Passage and Ideology 110th Congress")
+
+ggplotly(p2)
+
+```
+
+page 3
+======
+
+input{.sidebar}
+----------------------------------------------------------------------------
+
+### User input 
+
+```{r}
+dat3 <- dat %>% 
+  group_by(st_name) %>% 
+  filter(congress==110) %>%
+  summarise(passed=sum(all_pass))
+vec<- dat3$st_name
+
+selectInput(inputId = "state",multiple = TRUE, label = "st_name", choices = vec, selected=vec)
+
+```
+
+column
+---------------------------------------------------------------------------
+### Chart D
+```{r}
+
+renderPlot(ggplot(filter(dat3, st_name==input$state), aes(x=passed, y=st_name))+ geom_bar(stat = "identity")
+)
+
+
+```
+
+

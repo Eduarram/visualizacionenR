@@ -1,0 +1,13 @@
+name: aplication_advanced
+title: aplication_advanced
+username:
+account: eduardo-rodrigo
+server: shinyapps.io
+hostUrl: https://api.shinyapps.io/v1
+appId: 4469702
+bundleId: 4902055
+url: https://eduardo-rodrigo.shinyapps.io/aplication_advanced/
+when: 1628469231.20401
+lastSyncTime: 1628469231.20401
+asMultiple: FALSE
+asStatic: FALSE
